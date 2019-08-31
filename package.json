@@ -1,0 +1,26 @@
+{
+  "name": "mue",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "ava": "^2.3.0"
+  },
+  "scripts": {
+    "test": "ava"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/findQin/Mue.git"
+  },
+  "author": "find_qin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/findQin/Mue/issues"
+  },
+  "homepage": "https://github.com/findQin/Mue#readme"
+}

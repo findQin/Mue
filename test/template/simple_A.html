@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <!---->
+  <!-- #region -->
+  <!--
+    multi
+  -->
+
+  <head></head>
+  <body>
+    <h2>
+      > Template
+    </h2>
+    <div id='temp' data="\"">
+        <h1>{{title}}</h1>
+        <div data-year='{{content.year}}'>出版于{{content.year}}, 共{{content.pages}}页</div>
+    </div>
+    <h2>
+        > Data
+    </h2>
+    <text id='data'>
+    </text>
+    <h2>
+        > Render
+    </h2>
+    <button onclick="void onrenderclicked()">Render width Data</button>
+    <script src="../../src/template/simple_compile.js"></script>
+    <script>
+      var data = {
+        title: 'My Lemon',
+        content: {
+          pages: 327,
+          year: 2019
+        }
+      }
+      var temp = 
+      `
+      <div>
+        <h1>{{title}}</h1>
+        <div data-year='{{content.year}}'>出版于{{content.year}}, 共{{content.pages}}页</div>
+      </div>
+      `
+      // insert template && data
+      document.getElementById('temp').innerText = temp;
+      document.getElementById('data').innerText = JSON.stringify(data, null, 2);
+      // do render
+      function onrenderclicked() {
+        var result = simpleCompile(temp, data);
+        document.body.appendChild(result);
+      }
+    </script>
+  </body>
+</html>
