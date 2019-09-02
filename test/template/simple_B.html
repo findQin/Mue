@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+    <h2>
+      > Template
+    </h2>
+    <div id='template'>
+    </div>
+    <h2>
+        > Data
+    </h2>
+    <div id="data"></div>
+    <h2>
+        > Render
+    </h2>
+    <div>
+      <button onclick="void render()">Render</button>
+    </div>
+    <h2>
+        > Result
+    </h2>
+    <div id="result">
+    </div>
+
+    <script src="../../src/utils/copy_object.js"></script>
+    <script src="../../src/template/template_2_vdom.js"></script>
+    <script src="../../src/template/m_simple_compile.js"></script>
+    <script src="../../src/template/vdom_2_dom.js"></script>
+    <script>
+      var temp = `
+      <div id='temp'>
+        <h3 m-if="{{true}}">{{title}}</h3>
+        <ul>
+          <li m-for="{{books}}" m-key="{{index}}">{{item.title}}</li>
+        </ul>
+        <div m-if="{{isShown}}">
+          <p>hidden</p>
+        </div>
+      </div>
+      `;
+      var data = {
+        title: 'Book List',
+        books: [{title: 'Book A'}, {title: 'Book B'}],
+        isShown: false,
+      };
+      // 插入模板节点
+      document.getElementById('template').innerText = temp;
+      // 插入文本节点
+      document.getElementById('data').innerText = JSON.stringify(data, null, 2);
+      // 渲染
+      function render() {
+        var vdom = mSimpleCompile(temp, data);
+        var dom = vdom2Dom(vdom);
+        document.getElementById('result').appendChild(dom);
+      }
+    </script>
+  </body>
+</html>

@@ -22,11 +22,30 @@ VDOM.prototype.getAttribute = function(attrName) {
 VDOM.prototype.setAttribute = function(attrName, attrValue) {
   if (!(attrName in this.attributes)) {
     this.attributes[this.attributes.length++] = {
-      key: attrName,
+      name: attrName,
       value: attrValue,
     };
+  } else {
+    for (let i = 0; i < this.attributes.length; i++) {
+      if (this.attributes[i].name === attrName) {
+        this.attributes[i].value = attrValue;
+      }
+    }
   }
   this.attributes[attrName] = attrValue;
+}
+VDOM.prototype.removeAttribute = function(attrName) {
+  let index = -1;
+  for (let i = 0; i < this.attributes.length; i++) {
+    if (this.attributes[i].name === attrName) {
+      index = i;
+      break;
+    }
+  }
+  if (index !== -1) {
+    Array.prototype.splice.call(this.attributes, index, 1);
+  }
+  delete this.attributes[attrName];
 }
 
 //
@@ -188,80 +207,82 @@ function detectEndPos(template, start, endStrs) {
 // var vdom3 = template2Vdom(temp3);
 
 
-var temp4 = `
-<view id="answer_area" wx:if="!isDone">
-  <view id="answer-area-wrapper" style="transform: translate({{answerTextPanelPosition}}, 0);">
+// var temp4 = `
+// <view id="answer_area" wx:if="!isDone">
+//   <view id="answer-area-wrapper" style="transform: translate({{answerTextPanelPosition}}, 0);">
 
-    <view class='answer-text-level1-container'>
-      <view class='st-title'>
-        <text>1<span>/5</span></text>
-        <text>请选择你的性别</text>
-      </view>
-      <view class='st-buttons-wrapper'>
-        <view class='st-buttons-wrapper-inner'>
-          <view class='st-buttons {{answerTextLevelSelected.level1 === 1? "selected" : ""}}' id="btn-1-1" catchtap='onTapLevelButton'>男</view>
-          <view class='st-buttons {{answerTextLevelSelected.level1 === 2? "selected" : ""}}' id="btn-2-1" catchtap='onTapLevelButton'>女</view>
-        </view>
-      </view>
-    </view>
-    <view class='answer-text-level2-container'>
-      <view class='st-title'>
-        <text>2<span>/5</span></text>
-        <text>你有爱车吗</text>
-      </view>
-      <view class='st-buttons-wrapper'>
-        <view class='st-buttons-wrapper-inner'>
-          <view class='st-buttons {{answerTextLevelSelected.level2 === 1? "selected" : ""}}' id="btn-1-2" catchtap='onTapLevelButton'>有</view>
-          <view class='st-buttons {{answerTextLevelSelected.level2 === 2? "selected" : ""}}' id="btn-2-2" catchtap='onTapLevelButton'>没有</view>
-        </view>
-      </view>
-    </view>
-    <view class='answer-text-level3-container'>
-      <view class='st-title'>
-        <text>3<span>/5</span></text>
-        <text>你有宠物吗</text>
-      </view>
-      <view class='st-buttons-wrapper'>
-        <view class='st-buttons-wrapper-inner'>
-          <view class='st-buttons {{answerTextLevelSelected.level3 === 1? "selected" : ""}}' id="btn-1-3" catchtap='onTapLevelButton'>有</view>
-          <view class='st-buttons {{answerTextLevelSelected.level3 === 2? "selected" : ""}}' id="btn-2-3" catchtap='onTapLevelButton'>没有</view>
-        </view>
-      </view>
-    </view>
-    <view class='answer-text-level4-container'>
-      <view class='st-title'>
-        <text>4<span>/5</span></text>
-        <text>你现在的状态</text>
-      </view>
-      <view class='st-buttons-wrapper'>
-        <view class='st-buttons-wrapper-inner'>
-          <view class='st-buttons {{answerTextLevelSelected.level4 === 1? "selected" : ""}}' id="btn-1-4" catchtap='onTapLevelButton'>单身中</view>
-          <view class='st-buttons {{answerTextLevelSelected.level4 === 2? "selected" : ""}}' id="btn-2-4" catchtap='onTapLevelButton'>恋爱</view>
-          <view class='st-buttons {{answerTextLevelSelected.level4 === 3? "selected" : ""}}' id="btn-3-4" catchtap='onTapLevelButton'>已婚</view>
-        </view>
-      </view>
-    </view>
-    <view class='answer-text-level5-container'>
-      <view class='st-title'>
-        <text>5<span>/5</span></text>
-        <text>你有宝宝吗</text>
-      </view>
-      <view class='st-buttons-wrapper'>
-        <view class='st-buttons-wrapper-inner'>
-          <view class='st-buttons-wrapper5-inner'>
-            <view class='st-buttons {{answerTextLevelSelected.level5 === 1? "selected" : ""}}' id="btn-1-5" catchtap='onTapLevelButton'>有无宝宝</view>
-            <view class='st-buttons {{answerTextLevelSelected.level5 === 2? "selected" : ""}}' id="btn-2-5" catchtap='onTapLevelButton'>0-1岁</view>
-            <view class='st-buttons {{answerTextLevelSelected.level5 === 3? "selected" : ""}}' id="btn-3-5" catchtap='onTapLevelButton'>2-6岁</view>
-          </view>
-          <view class='st-buttons-wrapper5-mode-inner'>
-            <view class='st-buttons {{answerTextLevelSelected.level5 === 4? "selected" : ""}}' id="btn-4-5" catchtap='onTapLevelButton'>7-16岁</view>
-            <view class='st-buttons {{answerTextLevelSelected.level5 === 5? "selected" : ""}}' id="btn-5-5" catchtap='onTapLevelButton'>16岁以上</view>
-            <view class='st-buttons {{answerTextLevelSelected.level5 === 6? "selected" : ""}}' id="btn-6-5" catchtap='onTapLevelButton'>保密</view>
-          </view>
-        </view>
-      </view>
-    </view>
-  </view>
-</view>
-`
-var vdom4 = template2Vdom(temp4);
+//     <view class='answer-text-level1-container'>
+//       <view class='st-title'>
+//         <text>1<span>/5</span></text>
+//         <text>请选择你的性别</text>
+//       </view>
+//       <view class='st-buttons-wrapper'>
+//         <view class='st-buttons-wrapper-inner'>
+//           <view class='st-buttons {{answerTextLevelSelected.level1 === 1? "selected" : ""}}' id="btn-1-1" catchtap='onTapLevelButton'>男</view>
+//           <view class='st-buttons {{answerTextLevelSelected.level1 === 2? "selected" : ""}}' id="btn-2-1" catchtap='onTapLevelButton'>女</view>
+//         </view>
+//       </view>
+//     </view>
+//     <view class='answer-text-level2-container'>
+//       <view class='st-title'>
+//         <text>2<span>/5</span></text>
+//         <text>你有爱车吗</text>
+//       </view>
+//       <view class='st-buttons-wrapper'>
+//         <view class='st-buttons-wrapper-inner'>
+//           <view class='st-buttons {{answerTextLevelSelected.level2 === 1? "selected" : ""}}' id="btn-1-2" catchtap='onTapLevelButton'>有</view>
+//           <view class='st-buttons {{answerTextLevelSelected.level2 === 2? "selected" : ""}}' id="btn-2-2" catchtap='onTapLevelButton'>没有</view>
+//         </view>
+//       </view>
+//     </view>
+//     <view class='answer-text-level3-container'>
+//       <view class='st-title'>
+//         <text>3<span>/5</span></text>
+//         <text>你有宠物吗</text>
+//       </view>
+//       <view class='st-buttons-wrapper'>
+//         <view class='st-buttons-wrapper-inner'>
+//           <view class='st-buttons {{answerTextLevelSelected.level3 === 1? "selected" : ""}}' id="btn-1-3" catchtap='onTapLevelButton'>有</view>
+//           <view class='st-buttons {{answerTextLevelSelected.level3 === 2? "selected" : ""}}' id="btn-2-3" catchtap='onTapLevelButton'>没有</view>
+//         </view>
+//       </view>
+//     </view>
+//     <view class='answer-text-level4-container'>
+//       <view class='st-title'>
+//         <text>4<span>/5</span></text>
+//         <text>你现在的状态</text>
+//       </view>
+//       <view class='st-buttons-wrapper'>
+//         <view class='st-buttons-wrapper-inner'>
+//           <view class='st-buttons {{answerTextLevelSelected.level4 === 1? "selected" : ""}}' id="btn-1-4" catchtap='onTapLevelButton'>单身中</view>
+//           <view class='st-buttons {{answerTextLevelSelected.level4 === 2? "selected" : ""}}' id="btn-2-4" catchtap='onTapLevelButton'>恋爱</view>
+//           <view class='st-buttons {{answerTextLevelSelected.level4 === 3? "selected" : ""}}' id="btn-3-4" catchtap='onTapLevelButton'>已婚</view>
+//         </view>
+//       </view>
+//     </view>
+//     <view class='answer-text-level5-container'>
+//       <view class='st-title'>
+//         <text>5<span>/5</span></text>
+//         <text>你有宝宝吗</text>
+//       </view>
+//       <view class='st-buttons-wrapper'>
+//         <view class='st-buttons-wrapper-inner'>
+//           <view class='st-buttons-wrapper5-inner'>
+//             <view class='st-buttons {{answerTextLevelSelected.level5 === 1? "selected" : ""}}' id="btn-1-5" catchtap='onTapLevelButton'>有无宝宝</view>
+//             <view class='st-buttons {{answerTextLevelSelected.level5 === 2? "selected" : ""}}' id="btn-2-5" catchtap='onTapLevelButton'>0-1岁</view>
+//             <view class='st-buttons {{answerTextLevelSelected.level5 === 3? "selected" : ""}}' id="btn-3-5" catchtap='onTapLevelButton'>2-6岁</view>
+//           </view>
+//           <view class='st-buttons-wrapper5-mode-inner'>
+//             <view class='st-buttons {{answerTextLevelSelected.level5 === 4? "selected" : ""}}' id="btn-4-5" catchtap='onTapLevelButton'>7-16岁</view>
+//             <view class='st-buttons {{answerTextLevelSelected.level5 === 5? "selected" : ""}}' id="btn-5-5" catchtap='onTapLevelButton'>16岁以上</view>
+//             <view class='st-buttons {{answerTextLevelSelected.level5 === 6? "selected" : ""}}' id="btn-6-5" catchtap='onTapLevelButton'>保密</view>
+//           </view>
+//         </view>
+//       </view>
+//     </view>
+//   </view>
+// </view>
+// `
+// var vdom4 = template2Vdom(temp4);
+
+// export default template2Vdom;
