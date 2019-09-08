@@ -50,7 +50,7 @@ function needCompile(value) {
 function resolveData(text, data) {
   with (data) {
     return text.replace(/{{([^}]*)}}/g, function(s0, s1){
-      return eval(s1);
+      return eval(s1);// {{"}}"}} 时解析出错
     });
   }
 }

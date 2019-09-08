@@ -18,7 +18,7 @@ function proxyObserver(data, onSet, onGet, prefix) {
   });
   return new Proxy(data, {
     set(target, property, value, receiver) {
-      onSet && onSet(property, value);
+      onSet && onSet(prefix ? `${prefix}.${property}` : property, target[property], value);
       return Reflect.set(target, property, value, receiver);
     },
     get(target, property, receiver) {

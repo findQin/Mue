@@ -98,7 +98,7 @@ function resolveFor(node, data) {
     content = resolveRawData(content, data);
     let replaceNodes = (content || []).map((item, index) => {
       let cpNode = copyObject(node);
-      return compileNodes(cpNode, Object.assign({index, item}, data));
+      return compileNodes(cpNode, Object.assign({}, data, {index, item})); // item、index 覆盖data中值
     });
     return replaceNodes;
   }

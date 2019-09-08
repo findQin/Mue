@@ -101,9 +101,9 @@ function resolveSimpleTag(tagString) {
     i = tillNotSpace(tagString, i);
     if (!vdom.nodeName) {
       // 读取标签
-      let nextSpace = tagString.indexOf(' ', i);
+      let nextSpace = tagString.indexOf(' ', i); //<p>123</p>
       let nextRight = tagString.indexOf('>', i);
-      let tagEndPos = nextSpace !== -1 ? Math.min(nextSpace, nextRight) : nextSpace;
+      let tagEndPos = nextSpace !== -1 ? Math.min(nextSpace, nextRight) : nextRight;
       vdom.nodeName = tagString.slice(i, tagEndPos);
       i = tagEndPos;
     } else {
@@ -178,11 +178,13 @@ function detectEndPos(template, start, endStrs) {
 }
 
 
-// var temp = '<a href="http://m.baidu.com" m-if="{{show}}" year=123/>';
+// var temp = '<a href="http://m.ba\\\\\\"idu.com" m-if="{{show>1 ? \'/\' : \'/>\'}}" year=123/>';
 // let res = resolveSimpleTag(temp, 0);
+// debugger;
 
 // var temp1 = `<a href="http://m.baidu.com" m-if="{{show}}" year=123/>`;
 // var vdom1 = template2Vdom(temp1);
+// debugger;
 
 // var temp2 = `
 // <!-- Here is comment-->
@@ -192,7 +194,7 @@ function detectEndPos(template, start, endStrs) {
 // </view>
 // `
 // var vdom2 = template2Vdom(temp2);
-
+// debugger;
 
 // var temp3 = `
 // <view id="box-example">

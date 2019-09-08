@@ -20,18 +20,20 @@
     <button onclick="void onrenderclicked()">Render width Data</button>
     <script src="../../src/template/simple_compile.js"></script>
     <script>
-      var data = {
-        title: 'My Lemon',
+    var data = {
+        title: 'My Lem23on',
         content: {
           pages: 327,
-          year: 2019
+          year: 2019,
+          title: 'My Le324435mon'
         }
       }
+      // if(data.startwith('{{'))
       var temp = 
       `
       <div>
-        <h1>{{title}}</h1>
-        <div data-year='{{content.year}}'>出版于{{content.year}}, 共{{content.pages}}页</div>
+        <h1>{{content.title}}</h1>
+        <div data-year='{{content.year}}'>出版于{{1 < 2? "123":''}}, 共{{content.pages}}页</div>
       </div>
       `
       // insert template && data

@@ -29,7 +29,7 @@
     <script src="../../src/template/vdom_2_dom.js"></script>
     <script>
       var temp = `
-      <div id='temp'>
+      <div id='temp' data-i="{{'div\\"' < 2 ? '' : '<'}}">
         <h3 m-if="{{true}}">{{title}}</h3>
         <ul>
           <li m-for="{{books}}" m-key="{{index}}">{{item.title}}</li>
@@ -40,6 +40,7 @@
       </div>
       `;
       var data = {
+        item: 'item',
         title: 'Book List',
         books: [{title: 'Book A'}, {title: 'Book B'}],
         isShown: false,
