@@ -8,8 +8,9 @@ function vdomDiff(vdomOld, vdomNew) {
   // 节点名相同 深层检查
   if (vdomOld.nodeType === 3 && vdomNew.nodeType === 3) {
     if (vdomOld.data !== vdomNew.data) {
-      vdomOld.elem.data = vdomNew.data;
       console.log('[DIFF] Text', `${vdomOld.data} => ${vdomNew.data}`);
+      vdomOld.data = vdomNew.data;
+      vdomOld.elem.data = vdomNew.data;
     }
   } else if (isSameName(vdomOld, vdomNew)) {
     if (!isSameAttr(vdomOld, vdomNew)) {
@@ -32,30 +33,43 @@ function patch(cdOld, cdNew, elemParent) {
   if (cdOld.length === 0 && cdNew.length === 0) {
     return;
   }
-  let startFromLeft = (cdOld.length === 0 || cdNew.length === 0) || isSameNode(cdOld[0], cdNew[0]);
-  if (startFromLeft) {
-    let oldIndex = 0;
-    let newIndex = 0;
-    // 更新节点
-    for (; oldIndex < cdOld.length && newIndex < cdNew.length; oldIndex++, newIndex++) {
-      cdOld[oldIndex] = vdomDiff(cdOld[oldIndex], cdNew[newIndex]);
+  let oldStartIdx = 0,
+      oldEndIdx = cdOld.length - 1;
+  let newStartIdx = 0,
+      newEndIdx = cdNew.length - 1;
+  while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+    if (isSameNode(cdOld[oldStartIdx], cdNew[newStartIdx])) {
+      cdOld[oldStartIdx] = vdomDiff(cdOld[oldStartIdx], cdNew[newStartIdx]);
+      cdNew[newStartIdx++] = cdOld[oldStartIdx++];
+    } else if (isSameNode(cdOld[oldEndIdx], cdNew[newEndIdx])) {
+      cdOld[oldEndIdx] = vdomDiff(cdOld[oldEndIdx], cdNew[newEndIdx]);
+      cdNew[newEndIdx--] = cdOld[oldEndIdx--];
+    } else { // 与头部相同一致（可以优化）
+      cdOld[oldStartIdx] = vdomDiff(cdOld[oldStartIdx], cdNew[newStartIdx]);
+      cdNew[newStartIdx++] = cdOld[oldStartIdx++];
     }
-    // 删除多余旧节点
-    for (let i = cdOld.length - 1; i >= oldIndex; i--) {
-      let elem = cdOld[i].elem;
-      elemParent.removeChild(elem);
-      console.log('[DIFF] Rmnd', `${cdOld[i].nodeName}`);
-      cdOld.pop();
+  }
+  // 删除多余节点
+  for (; oldStartIdx <= oldEndIdx; oldEndIdx--) {
+    let oldChild = cdOld[oldStartIdx];
+    elemParent.removeChild(oldChild.elem);
+    cdOld.splice(oldStartIdx, 1);
+    console.log('[DIFF] Rmnd', `${oldChild.nodeName}`);
+  }
+  // 增加新的节点
+  let lastChild = cdNew[newEndIdx + 1] ? cdNew[newEndIdx + 1].elem : null;
+  for (; newStartIdx <= newEndIdx; newStartIdx++) {
+    let newChild = vdom2DomV3(cdNew[newStartIdx]);
+    // 插入真实节点
+    elemParent.insertBefore(newChild, lastChild);
+    // 对齐虚拟节点
+    let lastIndex = cdOld.indexOf(lastChild);
+    if (lastChild !== -1) {
+      cdOld.splice(lastIndex, 0, cdNew[newStartIdx]);
+    } else {
+      cdOld.push(cdNew[newStartIdx]);
     }
-    // 增加新的子节点
-    for (; newIndex < cdNew.length; newIndex++) {
-      let elem = vdom2DomV3(cdNew[newIndex]);
-      elemParent.appendChild(elem);
-      console.log('[DIFF] Adnd', `${cdNew[newIndex].nodeName}`);
-      cdOld.push(cdNew[newIndex]);
-    }
-  } else {
-
+    console.log('[DIFF] Adnd', `${cdNew[newStartIdx].nodeName}`, cdNew[newStartIdx]);
   }
 }
 
@@ -102,6 +116,7 @@ function updateAttrs(vdomOld, vdomNew) {
     let valOld = vdomOld.getAttribute(item);
     let valNew = vdomNew.getAttribute(item);
     if (valOld !== valNew) { // update
+      vdomOld.setAttribute(item, valNew);
       vdomOld.elem.setAttribute(item, valNew);
       console.log('[DIFF] Attr:Up', `${item}: ${valOld} => ${valNew}`);
       if (item === 'm-model') {
@@ -117,12 +132,14 @@ function updateAttrs(vdomOld, vdomNew) {
   // [Step 2] 删除原有属性
   let uniqueOld = new Set([...setOld].filter(item => !common.has(item)));
   for (let item of uniqueOld) {
+    vdomOld.removeAttribute(item);
     vdomOld.elem.removeAttribute(item);
     console.log('[DIFF] Attr:Rm', `${item}`);
   }
   // [Step 3] 增加新的属性
   let uniqueNew = new Set([...setNew].filter(item => !common.has(item)));
   for (let item of uniqueNew) {
+    vdomOld.setAttribute(item, valNew);
     vdomOld.elem.setAttribute(item, valNew);
     console.log('[DIFF] Attr:New', `${item}: ${valNew}`);
   }
