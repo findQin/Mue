@@ -39,6 +39,9 @@ function observerKeys(data, keys, onSet, onGet, prefix) {
       configurable: true,
       set: function(newValue) {
         value = newValue;
+        if (typeof newValue === 'object') {
+          mueObserver(newValue, onSet, onGet, fullKey);
+        }
         onSet && onSet(fullKey, value, newValue);
       },
       get: function() {

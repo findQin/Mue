@@ -54,7 +54,7 @@ function patch(cdOld, cdNew, elemParent) {
     let oldChild = cdOld[oldStartIdx];
     elemParent.removeChild(oldChild.elem);
     cdOld.splice(oldStartIdx, 1);
-    console.log('[DIFF] Rmnd', `${oldChild.nodeName}`);
+    console.log('[DIFF] Rmnd', `${oldChild.nodeName}`, oldChild);
   }
   // 增加新的节点
   let lastChild = cdNew[newEndIdx + 1] ? cdNew[newEndIdx + 1].elem : null;
