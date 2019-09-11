@@ -16,6 +16,12 @@ function mueObserver(data, onSet, onGet, prefix) {
         observerKeys(data, len + index, onSet, onGet, prefix);
       })
     }
+    data.pop = function() {
+      let idx = data.length - 1;
+      let val = data[idx];
+      Array.prototype.pop.call(data);
+      onSet && onSet(`${prefix}.${idx}`, val, undefined);
+    }
   }
   // 普通对象监听
   const keys = Object.keys(data);
@@ -30,7 +36,7 @@ function observerKeys(data, keys, onSet, onGet, prefix) {
     mueObserver(value, onSet, onGet, fullKey);
     Object.defineProperty(data, key, {
       enumerable: true,
-      configurable: false,
+      configurable: true,
       set: function(newValue) {
         value = newValue;
         onSet && onSet(fullKey, value, newValue);

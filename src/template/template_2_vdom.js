@@ -15,6 +15,8 @@ function VDOM(options = {}) {
   this.parentNode = options.parentNode || null;
   this.id = options.id || '';
   this.key = options.key || '';
+  // Append Elem
+  this.elem = options.elem || null;
 }
 VDOM.prototype.getAttribute = function(attrName) {
   return this.attributes[attrName];

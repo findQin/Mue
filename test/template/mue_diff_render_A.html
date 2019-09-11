@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+    <h2>
+      > Template
+    </h2>
+    <div id='template'>
+    </div>
+    <h2>
+        > Data
+    </h2>
+    <div id="data"></div>
+    <h2>
+        > Render
+    </h2>
+    <div>
+      <button onclick="void diffRender()">Render</button>
+    </div>
+    <h2>
+        > Result
+    </h2>
+    <div id="result">
+    </div>
+
+    <script src="../../src/data/mue_observer.js"></script>
+    <script src="../../src/utils/copy_object.js"></script>
+    <script src="../../src/template/template_2_vdom.js"></script>
+    <script src="../../src/template/m2_simple_compile.js"></script>
+    <script src="../../src/template/vdom_2_dom_v3.js"></script>
+    <script src="../../src/template/vdom_diff.js"></script>
+    <script>
+      var temp = `
+      <div id='temp'>
+        <h3 m-if="{{true}}">{{title}}</h3>
+        <ul>
+          <li m-for="{{books}}" m-key="{{index}}">{{item.title}}</li>
+        </ul>
+        <input id='myinput' value="{{title}}" m-model="{{title}}" style="display:block"/>
+        <div m-if="{{isShown}}">
+          <p>hidden</p>
+        </div>
+      </div>
+      `;
+      var data = {
+        title: 'Book List',
+        books: [{title: 'Book A'}, {title: 'Book B'}],
+        isShown: false,
+      };
+      window.fullKey = null;
+      mueObserver(data, function(fullKey, value, newValue) {
+        window.fullKey = fullKey;
+        diffRender();
+        window.fullKey = null;
+      });
+      // 插入模板节点
+      document.getElementById('template').innerText = temp;
+      // 插入文本节点
+      // document.getElementById('data').innerText = JSON.stringify(data, null, 2);
+      // VDOM模板节点
+      var tempDom = template2Vdom(temp);
+      // 渲染
+      var lastDom = null;
+      var lastVDom = null;
+      function diffRender() {
+        var dom = null;
+        var vdom = compileNodes(copyObject(tempDom), data);
+        if (lastDom && lastVDom) {
+          vdom = vdomDiff(lastVDom, vdom);
+          lastDom = vdom.elem;
+        } else {
+          lastDom = vdom2DomV3(vdom);
+          document.getElementById('result').appendChild(lastDom);
+        }
+        lastVDom = vdom;
+      }
+    </script>
+  </body>
+</html>
